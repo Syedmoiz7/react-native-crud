@@ -19,7 +19,7 @@ const AddTaskScreen = () => {
   const { theme } = useThemeContext();
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  
+
   const [name, setName] = useState('');
   const [priority, setPriority] = useState<'High' | 'Medium' | 'Low'>('Medium');
   const [dueDate, setDueDate] = useState(new Date());
@@ -29,7 +29,7 @@ const AddTaskScreen = () => {
     if (!name.trim()) return;
 
     dispatch(addTask({
-      id: uuidv4(),
+      id: new Date().toString(),
       name,
       priority,
       dueDate: dueDate.toISOString(),
@@ -64,7 +64,7 @@ const AddTaskScreen = () => {
       </View>
 
       <Text style={[styles.label, { color: theme.colors.text }]}>Due Date</Text>
-      <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.dateButton}>
+      <TouchableOpacity onPress={() => setShowDatePicker(true)} style={[styles.dateButton, { borderColor: theme.colors.text }]}>
         <Text style={{ color: theme.colors.text }}>{dueDate.toDateString()}</Text>
       </TouchableOpacity>
 

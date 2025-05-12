@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store';
-import { toggleTaskCompletion, archiveOldCompletedTasks } from '../store/tasksSlice';
+import { toggleTaskCompletion, deleteTask, archiveOldCompletedTasks } from '../store/tasksSlice';
 import { useThemeContext } from '../theme/ThemeContext';
 import ThemeToggle from '../components/ThemeToggle';
 import { useNavigation } from '@react-navigation/native';
@@ -29,15 +29,39 @@ const TaskListScreen = () => {
     });
 
   const renderItem = ({ item }: any) => (
-    <TouchableOpacity
-      onPress={() => dispatch(toggleTaskCompletion(item.id))}
-      style={[styles.taskItem, { backgroundColor: theme.colors.primary + '20' }]}
-    >
-      <Text style={[styles.taskName, { textDecorationLine: item.completed ? 'line-through' : 'none', color: theme.colors.text }]}>
-        {item.name}
-      </Text>
-      <Text style={[styles.priority, { color: theme.colors.text }]}>Priority: {item.priority}</Text>
-    </TouchableOpacity>
+    <View style={[styles.taskItem, { backgroundColor: theme.colors.primary + '20' }]}>
+      <TouchableOpacity style={{ flex: 1 }}>
+        <Text
+          style={[
+            styles.taskName,
+            {
+              textDecorationLine: item.completed ? 'line-through' : 'none',
+              color: theme.colors.text,
+            },
+          ]}
+        >
+          {item.name}
+        </Text>
+        <Text style={[styles.priority, { color: theme.colors.text }]}>
+          Priority: {item.priority}
+        </Text>
+      </TouchableOpacity>
+
+      <View style={styles.delteCompleteButtons}>
+        <TouchableOpacity
+          onPress={() => dispatch(deleteTask(item.id))}
+          style={styles.deleteButton}>
+          <Text style={styles.deleteText}>Delete</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => dispatch(toggleTaskCompletion(item.id))}
+          style={[styles.deleteButton, { backgroundColor: theme.colors.primary }]}>
+          <Text style={styles.deleteText}>{item?.completed ? 'Incomplete' : 'Completed'}</Text>
+        </TouchableOpacity>
+      </View>
+
+    </View>
   );
 
   return (
@@ -49,7 +73,9 @@ const TaskListScreen = () => {
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         ListEmptyComponent={<Text style={{ color: theme.colors.text }}>No tasks found.</Text>}
+        showsVerticalScrollIndicator={false}
       />
+
       <TouchableOpacity
         onPress={() => navigation.navigate('AddTask')}
         style={[styles.addButton, { backgroundColor: theme.colors.primary }]}
@@ -91,6 +117,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   addText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  delteCompleteButtons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end'
+  },
+  deleteButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    backgroundColor: 'crimson',
+    borderRadius: 6,
+    alignSelf: 'flex-end',
+    marginLeft: 10,
+  },
+  deleteText: {
     color: 'white',
     fontWeight: 'bold',
   },
